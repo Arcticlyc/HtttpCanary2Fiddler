@@ -19,19 +19,12 @@ def zip(folder_path, zip_path):
     folder_path = Path(folder_path)
     zip_path = Path(zip_path)
 
-    # 创建 Zip 文件
-    with zipfile.ZipFile(zip_path, 'w') as zipf:
-        # 遍历文件夹下的所有文件和文件夹
-        for p in folder_path.iterdir():
-            # 如果是文件夹，则递归调用zip函数
-            if p.is_dir():
-                zipf.write(p, p.relative_to(folder_path))
-                zip(p, zip_path)
-            # 如果是文件，则将其添加到zip文件中
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for file in folder_path.glob('**/*'):
+            if file.is_file():
+                zf.write(file, file.relative_to(folder_path))
             else:
-                # 将文件添加到zip文件中
-                zipf.write(p, p.relative_to(folder_path.parent))
-
+                zf.write(file, file.relative_to(folder_path) / '')
 
 def transfer(target_dir):
     '''
